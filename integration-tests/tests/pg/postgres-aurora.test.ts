@@ -1,4 +1,4 @@
-import { createPool as createAuroraClient } from '@drizzle-team/minipg/aurora';
+import { createPool as createAuroraClient } from '@drizzle-team/postgres/aurora';
 import { and, defineRelations, eq, getColumns, inArray, not, type RelationsBuilder, sql } from 'drizzle-orm';
 import {
 	boolean,
@@ -21,7 +21,7 @@ import {
 	uniqueIndex,
 	uuid,
 } from 'drizzle-orm/pg-core';
-import { drizzle as drizzleAurora, minipgAuroraCodecs, type PostgresAuroraDatabase } from 'drizzle-orm/postgres/aurora';
+import { drizzle as drizzleAurora, postgresAuroraCodecs, type PostgresAuroraDatabase } from 'drizzle-orm/postgres/aurora';
 import { migrate } from 'drizzle-orm/postgres/aurora/migrator';
 import { existsSync, mkdirSync, rmSync, writeFileSync } from 'fs';
 import { describe, expect, expectTypeOf } from 'vitest';
@@ -38,7 +38,7 @@ import {
 	boundsRelations,
 	boundsSchema,
 	makeAllTypes,
-	temporalBoundsDataMinipg,
+	temporalBoundsDataPostgres,
 } from './all-types';
 import { tests } from './common';
 import { awsDataApiConfig, postgresAuroraTest as test } from './instrumentation';
@@ -1084,7 +1084,7 @@ describe('postgres/aurora', () => {
 
 			await push({ times });
 			const shaped = createDB({ times });
-			const coded = drizzleAurora({ client: (shaped as any).$client, codecs: minipgAuroraCodecs });
+			const coded = drizzleAurora({ client: (shaped as any).$client, codecs: postgresAuroraCodecs });
 
 			const value = {
 				id: 1,
@@ -1114,7 +1114,7 @@ describe('postgres/aurora', () => {
 			await assertAllTypesUnions(db);
 			await assertAllTypesBounds(db);
 			await assertAllTypesTemporalBounds(db, {
-				data: Date.now() < +new Date('2026-11-24') ? temporalBoundsDataMinipg : undefined,
+				data: Date.now() < +new Date('2026-11-24') ? temporalBoundsDataPostgres : undefined,
 			});
 
 			await assertAllTypesEmptyArrays(db, allTypesTable, { rqb: true });
@@ -1131,7 +1131,7 @@ describe('postgres/aurora', () => {
 				...allTypesRelations(r),
 				...boundsRelations(r),
 			}));
-			const db = drizzleAurora({ client: (base as any).$client, relations, codecs: minipgAuroraCodecs });
+			const db = drizzleAurora({ client: (base as any).$client, relations, codecs: postgresAuroraCodecs });
 			await db.insert(allTypesTable).values(allTypesData);
 
 			const [flat] = await db.select().from(allTypesTable);

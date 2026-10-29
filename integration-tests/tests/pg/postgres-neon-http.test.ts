@@ -1,7 +1,7 @@
-import { createPool as createNeonHttpClient } from '@drizzle-team/minipg/neon-http';
+import { createPool as createNeonHttpClient } from '@drizzle-team/postgres/neon-http';
 import { defineRelations, sql } from 'drizzle-orm';
 import { boolean, getTableConfig, integer, jsonb, pgTable, serial, text, timestamp } from 'drizzle-orm/pg-core';
-import { minipgCodecs } from 'drizzle-orm/postgres/codecs';
+import { postgresCodecs } from 'drizzle-orm/postgres/codecs';
 import type { PostgresHttpDatabase } from 'drizzle-orm/postgres/http';
 import { migrate } from 'drizzle-orm/postgres/http/migrator';
 import { drizzle as drizzleNeonHttp } from 'drizzle-orm/postgres/http/neon';
@@ -20,7 +20,7 @@ import {
 	boundsRelations,
 	boundsSchema,
 	makeAllTypes,
-	temporalBoundsDataMinipg,
+	temporalBoundsDataPostgres,
 } from './all-types';
 import { tests } from './common';
 import { postgresNeonHttpTest as test } from './instrumentation';
@@ -648,7 +648,7 @@ describe('driver-specific', () => {
 	});
 
 	test('insert via db.execute + select via db.execute', async ({ db, push }) => {
-		const usersTable = pgTable('users_execute_raw_minipg_1', {
+		const usersTable = pgTable('users_execute_raw_postgres_1', {
 			id: serial('id' as string).primaryKey(),
 			name: text('name').notNull(),
 			verified: boolean('verified').notNull().default(false),
@@ -669,7 +669,7 @@ describe('driver-specific', () => {
 	});
 
 	test('insert via db.execute + returning', async ({ db, push }) => {
-		const usersTable = pgTable('users_execute_raw_minipg_2', {
+		const usersTable = pgTable('users_execute_raw_postgres_2', {
 			id: serial('id' as string).primaryKey(),
 			name: text('name').notNull(),
 			verified: boolean('verified').notNull().default(false),
@@ -690,7 +690,7 @@ describe('driver-specific', () => {
 	});
 
 	test('insert via db.execute w/ query builder', async ({ db, push }) => {
-		const usersTable = pgTable('users_execute_raw_minipg_3', {
+		const usersTable = pgTable('users_execute_raw_postgres_3', {
 			id: serial('id' as string).primaryKey(),
 			name: text('name').notNull(),
 			verified: boolean('verified').notNull().default(false),
@@ -724,7 +724,7 @@ describe('driver-specific', () => {
 		await assertAllTypesUnions(db);
 		await assertAllTypesBounds(db);
 		await assertAllTypesTemporalBounds(db, {
-			data: Date.now() < +new Date('2026-11-24') ? temporalBoundsDataMinipg : undefined,
+			data: Date.now() < +new Date('2026-11-24') ? temporalBoundsDataPostgres : undefined,
 		});
 
 		await assertAllTypesEmptyArrays(db, allTypesTable, { rqb: true });
@@ -741,7 +741,7 @@ describe('driver-specific', () => {
 			...allTypesRelations(r),
 			...boundsRelations(r),
 		}));
-		const db = drizzleNeonHttp({ client: (base as any).$client, relations, codecs: minipgCodecs });
+		const db = drizzleNeonHttp({ client: (base as any).$client, relations, codecs: postgresCodecs });
 		await db.insert(allTypesTable).values(allTypesData);
 
 		const [flat] = await db.select().from(allTypesTable);

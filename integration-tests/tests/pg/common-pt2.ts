@@ -80,7 +80,7 @@ import {
 	boundsRelations,
 	boundsSchema,
 	makeAllTypes,
-	temporalBoundsDataMinipg,
+	temporalBoundsDataPostgres,
 } from './all-types';
 import type { Test } from './instrumentation';
 import { normalizeDataWithDbCodecs } from './utils';
@@ -4050,11 +4050,11 @@ export function tests(test: Test) {
 		test('all types ~codecs~ - non-UTC session', async ({ createDB }) => {
 			const db = createDB({ ...boundsSchema }, boundsRelations);
 
-			const minipgIssues = is(db, PostgresDatabase) && Date.now() < +new Date('2026-11-24');
+			const postgresIssues = is(db, PostgresDatabase) && Date.now() < +new Date('2026-11-24');
 
 			await assertAllTypesTemporalBoundsInSessionTimeZones(db, {
-				rqb: !minipgIssues,
-				data: minipgIssues ? temporalBoundsDataMinipg : undefined,
+				rqb: !postgresIssues,
+				data: postgresIssues ? temporalBoundsDataPostgres : undefined,
 			});
 		});
 

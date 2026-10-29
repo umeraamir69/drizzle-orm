@@ -1639,7 +1639,7 @@ export async function assertAllTypesTemporalBoundsInSessionTimeZones(
 }
 
 // TODO: remove after driver-side fixes
-export const temporalBoundsDataMinipg: TemporalBoundsRow[] = temporalBoundsData.map((row) => {
+export const temporalBoundsDataPostgres: TemporalBoundsRow[] = temporalBoundsData.map((row) => {
 	// 275760-09-13, the last instant a `Date` holds: `NaN` with sub-millisecond digits (binary scalars),
 	// or with a positive offset (array elements in non-UTC sessions)
 	if (row.id === 8) return { ...row, timestampTz: null, arrTimestampTz: null };
