@@ -877,6 +877,8 @@ export const newYorkersWithSubquery2 = pgMaterializedView('new_yorkers_with_sq_m
 	}
 
 	const role = pgEnum('role', Role);
+	// Object overload keeps literal enumValues (https://github.com/drizzle-team/drizzle-orm/issues/6623)
+	Expect<Equal<typeof role.enumValues, Array<Role>>>;
 
 	enum RoleNonString {
 		admin,
