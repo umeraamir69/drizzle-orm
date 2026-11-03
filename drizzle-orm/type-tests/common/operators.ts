@@ -1,6 +1,6 @@
 import { type Equal, Expect } from 'type-tests/utils.ts';
 import { drizzle as cockroachd } from '~/cockroach/index.ts';
-import { and, eq, not, or } from '~/index.ts';
+import { and, eq, not, or, type SQL } from '~/index.ts';
 import { drizzle as sqlited } from '~/libsql/index.ts';
 import { drizzle as mysqld } from '~/mysql2/index.ts';
 import { drizzle as mssqld } from '~/node-mssql/index.ts';
@@ -90,4 +90,11 @@ const cockroach = cockroachd.mock();
 				),
 			),
 		);
+}
+
+// Defined input keeps a defined SQL return (https://github.com/drizzle-team/drizzle-orm/issues/6625)
+{
+	const condition: SQL = eq(pgUsers.id, 1);
+	const negated: SQL = not(condition);
+	Expect<Equal<typeof negated, SQL>>;
 }
