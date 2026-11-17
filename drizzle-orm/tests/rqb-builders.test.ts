@@ -88,6 +88,11 @@ describe('Filters', () => {
 				eq: sql.placeholder('date'),
 			},
 		})).toStrictEqual(and(and(eq(table.date, sql.placeholder('date')))));
+		// Bare Date alongside another field must not drop the date predicate.
+		expect(buildFilter(table, {
+			string: 'a',
+			date: at,
+		})).toStrictEqual(and(eq(table.string, 'a'), eq(table.date, at)));
 	});
 
 	test('eq shortcut', () => {
