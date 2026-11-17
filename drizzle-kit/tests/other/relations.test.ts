@@ -33,6 +33,23 @@ const table = (
 	uniques,
 });
 
+// NodeNext ESM rejects extensionless relative imports; pulled relations must use ./schema.js.
+test('relations file imports schema with a .js extension', () => {
+	const schema: SchemaForPull = [
+		table([], ['id'], [{ columns: ['id'] }]),
+		table(
+			[fk('posts', ['user_id'], 'users', ['id'], 'posts_user_fk')],
+			['id', 'user_id'],
+			[{ columns: ['id'] }],
+		),
+	];
+
+	const { file } = relationsToTypeScript(schema, 'camel');
+
+	expect(file).toContain('from "./schema.js"');
+	expect(file).not.toContain('from "./schema";');
+});
+
 // A pure link table: exactly two FKs and no columns beyond the FK columns.
 test('junction table produces a through relation and direct relations', () => {
 	const schema: SchemaForPull = [

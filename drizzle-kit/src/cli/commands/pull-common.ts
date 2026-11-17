@@ -197,7 +197,7 @@ export const relationsToTypeScript = (
 	});
 
 	const importsTs = `import { defineRelations } from "drizzle-orm";\nimport * as schema from "${
-		schemaPath ?? './schema'
+		schemaPath ?? './schema.js'
 	}";\n\n`;
 
 	let relationString = `export const relations = defineRelations(schema, (r) => ({`;
