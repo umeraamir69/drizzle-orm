@@ -70,28 +70,24 @@ const buildFilter = <TTable extends Table>(table: TTable, filter: TableFilter<TT
 };
 
 describe('Filters', () => {
-	test('No shortcuts for object-type data', () => {
-		try {
-			buildFilter(table, {
-				// @ts-expect-error
-				date: new Date(),
-			});
-			buildFilter(table, {
-				date: sql.placeholder('date'),
-			});
-			buildFilter(table, {
-				date: {
-					eq: new Date(),
-				},
-			});
-			buildFilter(table, {
-				date: {
-					eq: sql.placeholder('date'),
-				},
-			});
-		} catch {
-			return;
-		}
+	test('Date and Placeholder values are valid field filters', () => {
+		const at = new Date('2026-01-01T00:00:00Z');
+		expect(buildFilter(table, {
+			date: at,
+		})).toStrictEqual(and(eq(table.date, at)));
+		expect(buildFilter(table, {
+			date: sql.placeholder('date'),
+		})).toStrictEqual(and(eq(table.date, sql.placeholder('date'))));
+		expect(buildFilter(table, {
+			date: {
+				eq: at,
+			},
+		})).toStrictEqual(and(and(eq(table.date, at))));
+		expect(buildFilter(table, {
+			date: {
+				eq: sql.placeholder('date'),
+			},
+		})).toStrictEqual(and(and(eq(table.date, sql.placeholder('date')))));
 	});
 
 	test('eq shortcut', () => {

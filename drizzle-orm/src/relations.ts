@@ -1651,7 +1651,7 @@ export interface RelationFieldsFilterInternals<T> {
 	AND?: (RelationsFieldFilter<T> | EmptyFilter)[] | EmptyFilter;
 }
 
-export type Primitive = string | number | bigint | boolean | symbol | null | undefined;
+export type Primitive = string | number | bigint | boolean | symbol | null | undefined | Date;
 
 export type RelationsFieldFilter<T = unknown> =
 	| RelationFieldsFilterInternals<T>
@@ -2059,7 +2059,7 @@ function relationsFieldFilterToSQL(
 			`Unexpected 'undefined' in filter value. Use 'EmptyFilter' if you want the filter field to be skipped.`,
 		);
 	}
-	if (typeof filter !== 'object' || is(filter, Placeholder)) {
+	if (typeof filter !== 'object' || filter instanceof Date || is(filter, Placeholder)) {
 		collectTo.push(eq(column, filter));
 		return collectTo;
 	}
